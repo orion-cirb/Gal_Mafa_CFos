@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+		http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+        
+	<groupId>orion-cirb</groupId>
+	<artifactId>Gal_Mafa_CFos</artifactId>
+	<version>1.0.0</version>
+        <packaging>jar</packaging>
+	<name>plugins/CIRB/Gal_Mafa_CFos.jar</name>
+	<description>
+            Detect Gal, Mafa and CFos cells and compute their colocalization
+            Give volume and intensity of each Gal Mafa+/CFos+ cell
+        </description>
+
+	<developers>
+            <developer>
+                <id>phm</id>
+                <name>Philippe Mailly</name>
+                <email>philippe.mailly@college-de-france.fr</email>
+                <url></url>
+                <organization>CIRB, Collège de France</organization>
+                <roles>
+                        <role>developer</role>
+                </roles>
+                <timezone>-1</timezone>
+            </developer>
+              <developer>
+                <id>hm</id>
+                <name>Héloïse Monnet</name>
+                <email>heloise.monnet@college-de-france.fr</email>
+                <url></url>
+                <organization>CIRB, Collège de France</organization>
+                <roles>
+                        <role>developer</role>
+                </roles>
+                <timezone>-1</timezone>
+            </developer>
+	</developers>
+        <properties>
+            <imagej.app.directory>/opt/Fiji.app/</imagej.app.directory>
+            <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+            <main-class>Gal_Mafa_CFos</main-class>
+	</properties>
+        
+
+	<dependencies>
+            <dependency>
+                <groupId>net.imagej</groupId>
+                <artifactId>ij</artifactId>
+                <version>1.53u</version>
+                <type>jar</type>
+            </dependency>
+            <dependency>
+                <groupId>ome</groupId>
+                <artifactId>bioformats_package</artifactId>
+                <version>6.11.0</version>
+            </dependency>
+            <dependency>
+		<groupId>org.framagit.mcib3d</groupId>
+                <artifactId>mcib3d-core</artifactId>
+                <version>4.1.0</version>
+            </dependency>
+            <dependency>
+                <groupId>ome</groupId>
+                <artifactId>formats-common</artifactId>
+                <version>5.2.4</version>
+                <type>jar</type>
+             </dependency>
+             <dependency>
+                <groupId>ome</groupId>
+                <artifactId>formats-api</artifactId>
+                <version>6.11.1</version>
+                <type>jar</type>
+             </dependency>
+            <dependency>
+                <groupId>mpicbg</groupId>
+                <artifactId>mpicbg</artifactId>
+                <version>20120621</version>
+                <type>jar</type>
+            </dependency>
+            <dependency>
+                <groupId>sc.fiji</groupId>
+                <artifactId>fiji-lib</artifactId>
+                <version>2.1.4-SNAPSHOT</version>
+                <type>jar</type>
+            </dependency>
+            <dependency>
+                <groupId>net.imagej</groupId>
+                <artifactId>imagej</artifactId>
+                <version>2.9.0</version>
+                <type>jar</type>
+            </dependency>
+            <dependency>
+                <groupId>cirb.orion</groupId>
+                <artifactId>Orion_Toolbox</artifactId>
+                <version>1.0.0</version>
+            </dependency>
+	</dependencies>
+        
+        <repositories>
+            <repository>
+                <id>orion</id>
+                <url>https://github.com/orion-cirb/Orion_Toolbox/releases/</url>
+            </repository>
+            <repository>
+		<id>imagej.public</id>
+		<url>https://maven.imagej.net/content/groups/public</url>
+            </repository>
+            <repository>
+                <id>ome</id>
+                <name>Bio-Formats Repo</name>
+                <url>https://artifacts.openmicroscopy.org/artifactory/maven</url>
+            </repository>
+            <repository>
+                <id>jitpack.io</id>
+                <url>https://jitpack.io</url>
+            </repository>
+        </repositories>
+        
+	<build>
+            <plugins>
+		<plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>2.3.2</version>
+                    <configuration>
+                        <showDeprecation>true</showDeprecation>
+                        <source>1.8</source>
+                        <target>1.8</target>
+                    </configuration>
+		</plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-antrun-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <id>copytoplugins</id>
+                            <phase>install</phase>
+                            <goals>
+                                <goal>run</goal>
+                            </goals>
+                            <configuration>
+                                <target>
+                                    <copy todir="${imagej.app.directory}/plugins/CIRB" file="target/${project.build.finalName}.jar"/>
+                                </target>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+	</build>
+
+</project>
