@@ -1,6 +1,6 @@
 package Gal_Mafa_CFos_Tools;
 
-import Orion_Toolbox.Tools;
+import Orion.Toolbox.Tools;
 import fiji.util.gui.GenericDialogPlus;
 import ij.IJ;
 import ij.ImagePlus;
@@ -22,7 +22,7 @@ import mcib3d.image3d.ImageHandler;
  */
 public class Process {
     
-    public Orion_Toolbox.Tools tools = new Tools();
+    public Orion.Toolbox.Tools tools = new Tools();
     public final ImageIcon icon = new ImageIcon(this.getClass().getResource("/Orion_icon.png"));
     private final String helpUrl = "https://github.com/orion-cirb/Gal_Mafa_CFos.git";
     
@@ -74,7 +74,6 @@ public class Process {
             chChoices[n] = gd.getNextChoice();
         
         minGalVol = gd.getNextNumber();
-        
         cal.pixelHeight = cal.pixelWidth = gd.getNextNumber();
         cal.pixelDepth = gd.getNextNumber();
         pixVol = cal.pixelHeight*cal.pixelWidth*cal.pixelDepth;
