@@ -93,12 +93,12 @@
                 <version>2.9.0</version>
                 <type>jar</type>
             </dependency>
-            <dependency>
-                <groupId>cirb.orion</groupId>
-                <artifactId>Orion-Toolbox</artifactId>
-                <version>1.0.0</version>
-                <type>jar</type>
-            </dependency>
+	 <dependency>
+	  <groupId>cirb.orion</groupId>
+	  <artifactId>Orion-Toolbox</artifactId>
+	  <version>1.0.0</version>
+	  <type>jar</type>
+	 </dependency>
 	</dependencies>
         
         <repositories>
