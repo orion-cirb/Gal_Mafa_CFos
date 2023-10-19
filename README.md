@@ -23,7 +23,7 @@
 ### Dependencies
 
 * **3DImageSuite** Fiji plugin
-* **Stardist** "DSB2018.zip" model
+* **Stardist** *DSB2018.zip* model
 
 ### Version history
 
