@@ -1,33 +1,30 @@
-# Gal_Mafa_C-fos
+# Gal_Mafa_CFos
 
 * **Developed for:** Laure
 * **Team:** Rouach
-* **Date:** September 2023
+* **Date:** October 2023
 * **Software:** Fiji
 
 ### Images description
 
-3D images taken with a x25 objective
+3D images taken with a x25 objective on a spinning-disk microscope.
 
-2 channels:
-  1. *CSU_488:* GFP-Galanine cells
-  2. *CSU_561:* CFos cells
-  2. *CSU_642:* Mafa cells
+3 channels:
+  1. *CSU_488:* GFP-Galanin cells
+  2. *CSU_561:* c-Fos cells
+  2. *CSU_647:* Mafa cells
 
 ### Plugin description
-* Background: min projection + blur + default threshold + median intensity
-* Detect Galanine cells with Stardist
-* Detect c-Fos cells and Mafa
-* Find Galanine cells c-FOS+/- and Mafa+/-
-* Give Gal cells intensity in c-Fos and Mafa channels
-* Give Gal cells volume
+* Detect Galanin cells with Stardist
+* Compute background noise for each channel
+* Give Galanin cells background-corrected intensity in Galanin, c-Fos and Mafa channels
 
 
 ### Dependencies
 
 * **3DImageSuite** Fiji plugin
-* **Stardist** "StandardFluo.zip" model
+* **Stardist** "DSB2018.zip" model
 
 ### Version history
 
-Version 1 released on September 20, 2023.
+Version 1 released on October 19, 2023.
