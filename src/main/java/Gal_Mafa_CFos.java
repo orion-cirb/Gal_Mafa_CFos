@@ -1,5 +1,5 @@
 import Gal_Mafa_CFos_Tools.Cell;
-import Gal_Mafa_CFos_Tools.Process;
+import Gal_Mafa_CFos_Tools.Tools;
 import ij.*;
 import ij.plugin.PlugIn;
 import java.io.BufferedWriter;
@@ -35,11 +35,11 @@ import org.apache.commons.lang.ArrayUtils;
 */
 public class Gal_Mafa_CFos implements PlugIn {
     
-    private Gal_Mafa_CFos_Tools.Process proc = new Process();
+    private Gal_Mafa_CFos_Tools.Tools tools = new Tools();
        
     public void run(String arg) {
         try {
-            if (!proc.tools.checkInstalledModules("mcib3d.geom2.Object3DInt", "mcib3d") || !proc.tools.checkStarDistModels(proc.stardistModel)) {
+            if (!tools.checkInstalledModules() || !tools.checkStarDistModels()) {
                 return;
             }
             
@@ -49,8 +49,8 @@ public class Gal_Mafa_CFos implements PlugIn {
             }
             
             // Find images with fileExt extension
-            String fileExt = proc.tools.findImageType(new File(imageDir));
-            ArrayList<String> imageFiles = proc.tools.findImages(imageDir, fileExt);
+            String fileExt = tools.findImageType(new File(imageDir));
+            ArrayList<String> imageFiles = tools.findImages(imageDir, fileExt);
             if (imageFiles.isEmpty()) {
                 IJ.showMessage("Error", "No images found with " + fileExt + " extension");
                 return;
@@ -66,15 +66,15 @@ public class Gal_Mafa_CFos implements PlugIn {
             reader.setId(imageFiles.get(0));
             
             // Find image calibration
-            proc.cal = proc.tools.findImageCalib(meta);
+            tools.findImageCalib(meta);
             
             // Find channel names
-            String[] channelNames = proc.tools.findChannels(imageFiles.get(0), meta, reader);
+            String[] channelNames = tools.findChannels(imageFiles.get(0), meta, reader);
             
             // Generate dialog box
-            String[] channels = proc.dialog(imageDir, channelNames);
+            String[] channels = tools.dialog(imageDir, channelNames);
             if (channels == null) {
-                IJ.showStatus("Plugin canceled");
+                IJ.showMessage("Error", "Plugin canceled");
                 return;
             }
             
@@ -88,13 +88,14 @@ public class Gal_Mafa_CFos implements PlugIn {
             // Write headers results for results files
             FileWriter fwResults = new FileWriter(outDirResults + "results.csv", false);
             BufferedWriter results = new BufferedWriter(fwResults);
-            results.write("Image name\tImage vol (µm3)\tGal cell label\tGal vol (µm3)\tGal bg\tGal integrated int bg corrected\tCFos bg\t"
-                + "Gal integrated int bg corrected in Cfos channel\tMafa bg\tGal integrated int bg corrected in Mafa channel\n");
+            results.write("Image name\tImage vol (µm3)\tGal cell label\tGal cell vol (µm3)\tGal bg\tGal cell bg-corr integrated int\t"
+                    + "Gal cell bg-corr mean int\tMafa bg\tGal cell bg-corr integrated int in Mafa ch\tGal cell bg-corr mean int in Mafa ch\t"
+                    + "CFos bg\tGal cell bg-corr integrated int in CFos ch\tGal cell bg-corr mean int in CFos ch\n");
             results.flush();
             
             for (String f: imageFiles) {
                 String rootName = FilenameUtils.getBaseName(f);
-                proc.tools.print("--- ANALYZING IMAGE " + rootName + " ------");
+                tools.print("--- ANALYZING IMAGE " + rootName + " ------");
                 reader.setId(f);
                 
                 ImporterOptions options = new ImporterOptions();
@@ -104,54 +105,54 @@ public class Gal_Mafa_CFos implements PlugIn {
                 options.setColorMode(ImporterOptions.COLOR_MODE_GRAYSCALE);
                 
                 // Analyze Gal channel
-                proc.tools.print("- Analyzing Gal channel -");
+                tools.print("- Analyzing Galanin channel -");
                 int indexCh = ArrayUtils.indexOf(channelNames, channels[0]);
                 ImagePlus imgGal = BF.openImagePlus(options)[indexCh];
-                double galBg = proc.tools.findBackground(imgGal, null, "median");
-                Objects3DIntPopulation galPop = proc.tools.stardistObjectsPop(imgGal, 1, false, 0, proc.stardistModel, proc.stardistProbThresh, 
-                        proc.stardistOverlapThresh, false);
-                proc.tools.popFilterOneZ(galPop);
-                proc.tools.popFilterSize(galPop, proc.minGalVol, Double.MAX_VALUE);
-                proc.tools.print(galPop.getNbObjects() + "Galanin cells found");
+                double galBg = tools.findBackground(imgGal);
+                // Detect Gal cells
+                tools.print("- Detecting Galanin cells -");
+                Objects3DIntPopulation galPop = tools.stardistDetection(imgGal);
+                tools.print(galPop.getNbObjects() + "Galanin cells found");
                 
                 // Analyze Mafa channel
-                proc.tools.print("- Analyzing Mafa channel -");
+                tools.print("- Analyzing Mafa channel -");
                 indexCh = ArrayUtils.indexOf(channelNames, channels[1]);
                 ImagePlus imgMafa = BF.openImagePlus(options)[indexCh];
-                double mafaBg = proc.tools.findBackground(imgMafa, null, "median");
+                double mafaBg = tools.findBackground(imgMafa);
                 
-                // Analyze C-fos channel
-                proc.tools.print("- Analyzing c-Fos channel -");
+                // Analyze CFos channel
+                tools.print("- Analyzing c-Fos channel -");
                 indexCh = ArrayUtils.indexOf(channelNames, channels[2]);
                 ImagePlus imgCfos = BF.openImagePlus(options)[indexCh];
-                double cfosBg = proc.tools.findBackground(imgCfos, null, "median");
+                double cfosBg = tools.findBackground(imgCfos);
                 
                 // Compute parameters
-                proc.tools.print("- Compute parameters for Galanin cells -");
-                ArrayList<Cell> cells = new ArrayList<>();
-                proc.computeParams(cells, galPop, imgGal, imgMafa, imgCfos, galBg, mafaBg, cfosBg);
+                tools.print("- Computing Galanin cells parameters -");
+                ArrayList<Cell> cells = tools.computeParams(galPop, imgGal, imgMafa, imgCfos, galBg, mafaBg, cfosBg);
                 
                 // Write results
-                proc.tools.print("- Writing and drawing results -");
-                double imgVol = imgGal.getWidth() * imgGal.getHeight() * imgGal.getNSlices() * proc.pixVol;
+                tools.print("- Writing results -");
+                double imgVol = imgGal.getWidth() * imgGal.getHeight() * imgGal.getNSlices() * tools.pixVol;
                 for (Cell cell: cells) {
                     HashMap<String, Double> params = cell.getParams(); 
-                    results.write(rootName+"\t"+imgVol+"\t"+params.get("label")+"\t"+params.get("galVol")+"\t"+galBg+"\t"+params.get("galIntCor")+
-                            "\t"+cfosBg+"\t"+params.get("cfosIntCor")+"\t"+mafaBg+"\t"+params.get("mafaIntCor")+"\n");                                
+                    results.write(rootName+"\t"+imgVol+"\t"+params.get("label")+"\t"+params.get("vol")+"\t"+galBg+"\t"+params.get("galIntSum")+"\t"+
+                            params.get("galIntMean")+"\t"+mafaBg+"\t"+params.get("mafaIntSum")+"\t"+params.get("mafaIntMean")+"\t"+
+                            cfosBg+"\t"+params.get("cfosIntSum")+"\t"+params.get("cfosIntMean")+"\n");                                
                     results.flush();
                 }
                 
                 // Draw results
-                proc.drawResults(cells, imgGal, outDirResults+rootName+"_Objects.tif");
+                tools.print("- Drawing results -");
+                tools.drawResults(galPop, imgGal, outDirResults+rootName+".tif");
                 
-                proc.tools.flush_close(imgGal);
-                proc.tools.flush_close(imgMafa);
-                proc.tools.flush_close(imgCfos);
+                tools.closeImage(imgGal);
+                tools.closeImage(imgMafa);
+                tools.closeImage(imgCfos);
             }
             results.close();
         } catch (IOException | DependencyException | ServiceException | FormatException ex) {
             Logger.getLogger(Gal_Mafa_CFos.class.getName()).log(Level.SEVERE, null, ex);
         }
-        proc.tools.print("All done!");
+        tools.print("All done!");
     }
 }
