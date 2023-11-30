@@ -2,7 +2,7 @@
 
 * **Developed for:** Laure
 * **Team:** Rouach
-* **Date:** October 2023
+* **Date:** November 2023
 * **Software:** Fiji
 
 ### Images description
@@ -12,7 +12,7 @@
 3 channels:
   1. *CSU_488:* GFP-Galanin cells
   2. *CSU_561:* c-Fos cells
-  2. *CSU_647:* Mafa cells
+  2. *CSU_642:* Mafa cells
 
 ### Plugin description
 * Detect Galanin cells with Stardist
@@ -27,4 +27,4 @@
 
 ### Version history
 
-Version 1 released on October 19, 2023.
+Version 1 released on November 30, 2023.
