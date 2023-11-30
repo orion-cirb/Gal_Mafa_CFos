@@ -88,9 +88,9 @@ public class Gal_Mafa_CFos implements PlugIn {
             // Write headers results for results files
             FileWriter fwResults = new FileWriter(outDirResults + "results.csv", false);
             BufferedWriter results = new BufferedWriter(fwResults);
-            results.write("Image name\tImage vol (µm3)\tGal cell label\tGal cell vol (µm3)\tGal bg\tGal cell bg-corr integrated int\t"
-                    + "Gal cell bg-corr mean int\tMafa bg\tGal cell bg-corr integrated int in Mafa ch\tGal cell bg-corr mean int in Mafa ch\t"
-                    + "CFos bg\tGal cell bg-corr integrated int in CFos ch\tGal cell bg-corr mean int in CFos ch\n");
+            results.write("Image name\tImage vol (µm3)\tGal cell label\tGal cell vol (µm3)\tGal bg\tGal cell bg-corr integrated int\tGal cell bg-corr mean int"
+                    + "\tMafa bg\tIs Gal cell Mafa+?\tGal cell bg-corr integrated int in Mafa ch\tGal cell bg-corr mean int in Mafa ch"
+                    + "\tcFos bg\tIs Gal cell cFos+?\tGal cell bg-corr integrated int in cFos ch\tGal cell bg-corr mean int in cFos ch\n");
             results.flush();
             
             for (String f: imageFiles) {
@@ -135,9 +135,9 @@ public class Gal_Mafa_CFos implements PlugIn {
                 double imgVol = imgGal.getWidth() * imgGal.getHeight() * imgGal.getNSlices() * tools.pixVol;
                 for (Cell cell: cells) {
                     HashMap<String, Double> params = cell.getParams(); 
-                    results.write(rootName+"\t"+imgVol+"\t"+params.get("label")+"\t"+params.get("vol")+"\t"+galBg+"\t"+params.get("galIntSum")+"\t"+
-                            params.get("galIntMean")+"\t"+mafaBg+"\t"+params.get("mafaIntSum")+"\t"+params.get("mafaIntMean")+"\t"+
-                            cfosBg+"\t"+params.get("cfosIntSum")+"\t"+params.get("cfosIntMean")+"\n");                                
+                    results.write(rootName+"\t"+imgVol+"\t"+params.get("label")+"\t"+params.get("vol")+"\t"+galBg+"\t"+params.get("galIntSum")+"\t"+params.get("galIntMean")+
+                            "\t"+mafaBg+"\t"+params.get("mafaPos").intValue()+"\t"+params.get("mafaIntSum")+"\t"+params.get("mafaIntMean")+
+                            "\t"+cfosBg+"\t"+params.get("cfosPos").intValue()+"\t"+params.get("cfosIntSum")+"\t"+params.get("cfosIntMean")+"\n");                                
                     results.flush();
                 }
                 

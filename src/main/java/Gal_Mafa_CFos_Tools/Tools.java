@@ -39,7 +39,7 @@ public class Tools {
     
     public Calibration cal = new Calibration();
     public double pixVol;
-    String[] chNames = {"Galanin", "Mafa", "CFos"};
+    String[] chNames = {"Galanin", "Mafa", "cFos"};
      
     public File stardistModelsPath = new File(IJ.getDirectory("imagej")+File.separator+"models");
     public String stardistModel = "DSB2018.zip"; 
@@ -47,8 +47,13 @@ public class Tools {
     public final double stardistPercentileTop = 99.8;
     public final double stardistProbThresh = 0.75;
     public final double stardistOverlapThresh = 0.2;
+    
     public double minGalVol = 30;
     public double maxGalVol = 500;
+    
+    public double minCfosInt = 6;
+    public double minMafaInt = 20;
+    
     
 
     /**
@@ -246,6 +251,10 @@ public class Tools {
         gd.addNumericField("Min cell vol (µm3): ", minGalVol, 2);
         gd.addNumericField("Max cell vol (µm3): ", maxGalVol, 2);
         
+        gd.addMessage("Gal cells cFos/Mafa positivity", Font.getFont("Monospace"), Color.blue);
+        gd.addNumericField("Min cFos+ cell int: ", minCfosInt, 2);
+        gd.addNumericField("Min Mafa+ cell int: ", minMafaInt, 2);
+        
         gd.addMessage("Image calibration", Font.getFont("Monospace"), Color.blue);
         gd.addNumericField("XY calibration (µm): ", cal.pixelHeight, 3);
         gd.addNumericField("Z calibration (µm): ", cal.pixelDepth, 3);
@@ -258,6 +267,10 @@ public class Tools {
         
         minGalVol = gd.getNextNumber();
         maxGalVol = gd.getNextNumber();
+        
+        minCfosInt = gd.getNextNumber();
+        minMafaInt = gd.getNextNumber();
+        
         cal.pixelHeight = cal.pixelWidth = gd.getNextNumber();
         cal.pixelDepth = gd.getNextNumber();
         pixVol = cal.pixelHeight*cal.pixelWidth*cal.pixelDepth;
@@ -354,7 +367,7 @@ public class Tools {
         for (Object3DInt obj: pop.getObjects3DInt()) {
             Cell cell = new Cell();
             cell.setGal(obj);
-            cell.setParams(cell.getGal().getLabel(), imhGal, imhMafa, imhCfos, galBg, mafaBg, cfosBg);
+            cell.setParams(cell.getGal().getLabel(), imhGal, imhMafa, imhCfos, galBg, mafaBg, cfosBg, minMafaInt, minCfosInt);
             cells.add(cell);
         }
         return(cells);
